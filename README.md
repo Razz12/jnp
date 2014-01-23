@@ -1,3 +1,6 @@
+MOGNOLAUNCH:
+./bin/mongod --dbpath . --nojournal &
+
 jnp
 ===
 
