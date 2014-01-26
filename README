@@ -1,5 +1,12 @@
 MOGNOLAUNCH:
-./bin/mongod --dbpath . --nojournal &
+./mongodb-linux-x86_64-2.4.9/bin/mongod --dbpath ./mongodb-linux-x86_64-2.4.9/db1/ --nojournal --setParameter textSearchEnabled=true &
+
+NGINX CONF:
+/usr/local/nginx/conf/nginx.conf
+
+NGINX LAUNCH:
+sudo ./nginx-1.4.4/objs/nginx
+
 
 jnp
 ===

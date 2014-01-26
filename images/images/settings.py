@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'djangotoolbox',
-    'main'
+    'main',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -86,3 +86,10 @@ STATIC_URL = '/static/'
 #media
 MEDIA_ROOT = os.path.join(BASE_DIR,'media/');
 MEDIA_URL = '/media/'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'awesome-snowflake'
+    }
+}
