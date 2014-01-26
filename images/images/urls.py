@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 
-from main.views import rawImageView, postImageView
+from main.views import rawImageView, postImageView, searchView
 
 from django.contrib import admin
 admin.autodiscover()
@@ -12,7 +12,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 	url(r'^media/(?P<imagename>[^/]+)$', rawImageView),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^postImage/', postImageView)
+    url(r'^postImage/', postImageView),
+    url(r'^search/',searchView)
 )
 
 if False and settings.DEBUG:

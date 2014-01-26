@@ -8,6 +8,20 @@ from django.views.decorators.csrf import csrf_exempt
 import base64
 from django.core.files import File
 
+@csrf_exempt
+def searchView(request):
+	data = json.loads(request.raw_post_data)
+	#print("OKI")
+	ret = {}
+	ret["objects"] = Image.full_text(data['search'])
+	#print(ret)
+	#print("HEHE")
+	
+	kupa = json.dumps(ret, skipkeys=True)
+	#print("WYSZLO")
+	#print(kupa)
+	return HttpResponse(kupa, content_type="application/json")
+
 def rawImageView(request, imagename):
 	media_storage = GridFSStorage(location='/media/images/')
 	try:

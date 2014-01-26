@@ -52,11 +52,29 @@ class Image(models.Model):
     def thumbnail(self):
         return """<a href="/media%s"><img border="0" alt="" src="/media%s" height="40" /></a>""" % (
                                                                  (self.image.name, self.image.name))
+    def toDict(self):
+		ret = { }
+		ret["title"]=self.title
+		ret["image"]=self.image.name
+		ret["tags"]=self.tags
+		ret["description"]=self.description
+		#ret["created"]=self.created
+		#ret["rating"]=self.rating
+		#ret["width"]=self.width
+		#ret["height"]=self.height
+		return ret
     @staticmethod
-    def from_mongo(doc):
-		return Image.objects.create(title = doc.get('title'), image = doc.get('image'), tags = doc.get('tags'),
-			description = doc.get('description'), created = doc.get('created'), rating = doc.get('rating'),
-			width = doc.get('width'), height = doc.get('height'))
+    def from_mongo_to_dict(doc):
+		ret = { }
+		ret["title"]=doc.get('title')
+		ret["image"]=doc.get('image')
+		ret["tags"]=doc.get('tags')
+		ret["description"]=doc.get('description')
+		ret["created"]=str(doc.get('created'))
+		ret["rating"]=doc.get('rating')
+		ret["width"]=doc.get('width')
+		ret["height"]=doc.get('height')
+		return ret
      
     @staticmethod
     def full_text(search_text):
@@ -66,10 +84,11 @@ class Image(models.Model):
 		mongolist = db.command(
 			"text",
 			"main_image",
-			search="kupka")['results']
+			search=search_text)['results']
 		for mongos in mongolist:
 			print("Mam mongosa: " + str(mongos))
-			ret.append(Image.from_mongo(mongos['obj']))
+			ret.append(Image.from_mongo_to_dict(mongos['obj']))
+			print("POSZLO")
 		return ret
     
     thumbnail.allow_tags = True
