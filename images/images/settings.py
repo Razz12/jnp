@@ -60,7 +60,9 @@ WSGI_APPLICATION = 'images.wsgi.application'
 DATABASES = {
     'default': {
 		'ENGINE' : 'django_mongodb_engine',
-		'NAME' : 'my_database'
+		'NAME' : 'my_database',
+		 'USER': 'admin',
+        'PASSWORD': '123456',
     }
 }
 

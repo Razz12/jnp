@@ -2,6 +2,7 @@ from django.db import models, connections
 from djangotoolbox.fields import ListField
 from django_mongodb_engine.storage import GridFSStorage
 from django_mongodb_engine.contrib import MongoDBManager
+#from django_mongodb_engine import ImageField
 
 from string import join
 import os
@@ -10,7 +11,7 @@ from images.settings import MEDIA_ROOT
 
 from .forms import StringListField
 
-media_storage = GridFSStorage(location='/media');
+media_storage = GridFSStorage(location='/media/images/');
 
 class CategoryField(ListField):
     def formfield(self, **kwargs):
@@ -20,7 +21,7 @@ class CategoryField(ListField):
 
 class Image(models.Model):
     title = models.CharField(max_length=60, blank=True, null=True)
-    image = models.FileField(upload_to="images/", storage = media_storage, null = True)#remove null = True
+    image = models.FileField(upload_to="/", storage = media_storage, null = True)#remove null = True
     tags = CategoryField()
     description = models.CharField(max_length=100, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -35,9 +36,11 @@ class Image(models.Model):
         """Save image dimensions."""
         super(Image, self).save(*args, **kwargs)
         #needs to read from somewhere else
-        #im = PImage.open(os.path.join(MEDIA_ROOT, self.image.name))
-        #self.width, self.height = im.size
-        #super(Image, self).save(*args, ** kwargs)
+        f = media_storage.open(self.image.name, "rb")
+        im = PImage.open(f)
+        self.width, self.height = im.size
+        f.close()
+        super(Image, self).save(*args, ** kwargs)
 
     def size(self):
         """Image size."""
@@ -47,7 +50,7 @@ class Image(models.Model):
         return self.image.name
 
     def thumbnail(self):
-        return """<a href="/media/%s"><img border="0" alt="" src="/media/%s" height="40" /></a>""" % (
+        return """<a href="/media%s"><img border="0" alt="" src="/media%s" height="40" /></a>""" % (
                                                                  (self.image.name, self.image.name))
     @staticmethod
     def from_mongo(doc):

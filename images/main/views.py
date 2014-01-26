@@ -1,22 +1,43 @@
 from django.shortcuts import render
 from main.models import Image
 from django.db import connections
-from django.http import HttpResponseNotFound
+from django.http import HttpResponse,HttpResponseNotFound
+from django_mongodb_engine.storage import GridFSStorage
+import simplejson as json
+from django.views.decorators.csrf import csrf_exempt
+import base64
+from django.core.files import File
 
-def fullTextView(self):
-	#self.image1 = Image.objects.create(title = "Piekne zdjecie", tags = ["aa","bb"],description = "hyhy hue hue")
-	#self.image2 = Image.objects.create(title = "Niepiekne zdjecie", tags = ["aa","bb"],description = "hyhy hue hue")
-	#self.image1.save()
-	#self.image2.save()
-	#for con in connections:
-	#	print(con)
-	#database_wrapper = connections['default']
-	#col = database_wrapper.get_collection('main_images')
-	#col.ensure_index( { "tags": "text", "title": "text", "description": "text" } )
-	ret = Image.full_text("Piekne")
-	#ret = Image.objects.all()
-	print("Results")
-	for im in ret:
-		print(im)
-	print("ENDOfresults");
-	return HttpResponseNotFound('<h1>Page not found</h1>')
+def rawImageView(request, imagename):
+	media_storage = GridFSStorage(location='/media/images/')
+	try:
+		file = media_storage.open(imagename, "rb")
+		return HttpResponse(file.read(), mimetype="image/png")
+	except:
+		return HttpResponse('', mimetype="image/png")
+
+@csrf_exempt
+def postImageView(request):
+	print("IN\n");
+	data=json.loads( request.raw_post_data )
+	#print("HY " + data['image'] + "\n")
+	image = base64.b64decode(data['image'])
+	f = open("/home/razz/image.png", "wb+")
+	f.write(image)
+	f.close()
+	f = open("/home/razz/image.png", "rb")
+	print("KUPACZ\n")
+	data['image']=File(f)
+	doc = data
+	#print("OKI1\n");
+	imageModel = Image.objects.create(title = doc.get('title'),image = File(f),tags = doc.get('tags'),
+			description = doc.get('description'))
+	s = doc.get('title')
+	#print("he\n")
+	###name = "".join(c.lower() for c in s if not c.isspace())
+	#print("SAVING TO " + name)
+	#imageModel.image.save(name, File(f))
+	
+
+	print("OKI\n");
+	return HttpResponse("{'OK':1}", mimetype="application/json")
